@@ -1,0 +1,295 @@
+@import "../../../node_modules/uikit/src/less/uikit.theme.less";
+@import "../fontawesome/css/all.min.css";
+
+@global-link-color: #FF6B6E;
+@global-link-hover-color: #d16a6c;
+@global-primary-background: @global-link-color;
+
+@sidebar-width: 70px;
+@sidebar-item-margin: 10px;
+
+@torrent-info-width: 350px;
+
+@dark-background: #1E2125;
+@dark-block: #282D34;
+
+@color-green: #2ecc71;
+
+
+#app.theme-dark{
+    
+    body{
+        background-color: @dark-background;
+    }
+
+    .foxeed-block{
+        .uk-light();
+        background-color: @dark-block;
+        &.uk-card-default{
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+    }
+    #main-container{
+        background-color: @dark-background;
+    }
+    .foxeed-button{
+        &.router-link-active, &:hover{
+            color: @global-link-color;
+            background: @dark-background;
+        }
+    }
+    #torrent-container{
+        .foxeed-button:hover{
+            color: @global-link-hover-color;
+        }
+    }
+    .uk-dropdown{
+        background-color: @dark-block;
+    }
+    .uk-button-primary{
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    .uk-table{
+        .uk-dark();
+        &.uk-table-hover tbody tr:hover{
+            background: @dark-block;
+        }
+    }
+    .uk-tab{
+        .uk-active *{
+            color: @global-link-hover-color;
+        }
+    }
+    #ftp-download-queue{
+        background-color: @dark-block;
+    }
+}
+
+.foxeed-block{
+    .uk-box-shadow-medium();
+}
+
+#nav{
+    left: 0;
+    z-index: 1;
+    height: calc(100vh - @sidebar-width);
+    position: fixed;
+    overflow: hidden;
+    overflow-y: auto;
+    width: @sidebar-width;
+    padding-bottom: @sidebar-width;
+    >a{
+        margin: @sidebar-item-margin;
+        &:last-of-type{
+            left: 0;
+            bottom: 0;
+            border: none;
+            position: absolute;
+        }
+        &.router-link-active{
+            color: white;
+            background: @global-link-hover-color;
+        }
+    }
+}
+
+.foxeed-button{
+    border-radius: 50%;
+    font-size: 16px;
+    display: inline-block;
+    width: calc(@sidebar-width - (@sidebar-item-margin * 2));
+    height: calc(@sidebar-width - (@sidebar-item-margin * 2));
+    transition: .3s ease-in-out;
+    &:hover{
+        color: white;
+        background: @global-link-hover-color;
+    }
+}
+
+#main-container{
+    margin-left: @sidebar-width;
+}
+
+#torrent-container{
+    width: 100%;
+    transition: .4s;
+    &.torrent-info-opened{
+        width: calc(100% - @torrent-info-width);
+    }
+}
+
+#torrent-info{
+    top: 0;
+    height: 100%;
+    transition: .4s;
+    position: fixed;
+    padding: 30px 30px;
+    width: @torrent-info-width;
+    right: -@torrent-info-width;
+    &.opened{
+        right: 0;
+    }
+}
+
+    .uk-progress {
+        height: 4px;
+        transition: background-color 0.5s;
+        &::-webkit-progress-bar { background-color: @dark-background; }
+    }
+    // STOPPED
+    .torrent-status-STOPPED{
+        .uk-progress {
+            &::-webkit-progress-value { background-color: #888; } // those are the overflowing colors
+        }
+    }
+    // SEEDING
+    .torrent-status-SEED{
+        .uk-progress {
+            &::-webkit-progress-value { background-color: @color-green; } // those are the overflowing colors
+        }
+    }
+// #torrents-list{
+// }
+
+.state-pill{
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    vertical-align: middle;
+    background-color: @global-link-color;
+    &.connected{
+        background-color: @color-green;
+    }
+}
+
+.context-menu{
+    opacity: 1;
+    z-index: 999;
+    padding: 5px 0;
+    position: fixed;
+    border-radius: 5px;
+    transition: opacity .3s;
+    &.hidden{
+        opacity: 0;
+        top: -999px!important;
+        left: -999px!important;
+    }
+    ul{
+        padding: 0;
+        list-style: none;
+        li{
+            a{
+                width: 150px;
+                transition: .3s;
+                padding: 5px 10px;
+                font-weight: bold;
+                display: inline-block;
+                &:hover{
+                    color: white;
+                    text-decoration: none;
+                    background-color: @global-link-color;
+                }
+            }
+        }
+    }
+}
+
+.circle-progress{
+    position: relative;
+    &:before, &:after {
+        box-sizing: border-box;
+    }
+    .pie{
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        clip: rect(0, 100%, 100%, 50%);
+    }
+}
+
+#ftp-current-directory-container{
+    padding-bottom: 210px;
+    .ftp-current-directory-item{
+        margin-bottom: 5px;
+        &:not(.visible) {
+            display: none;
+        }
+    }
+
+    &.grid-display{
+        .ftp-current-directory-item{
+            width: 24%;
+            float: left;
+            padding-right: 1%;
+            margin-bottom: 1%;
+        }
+    }
+}
+
+#ftp-download-queue{
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    position: fixed;
+    padding-top: 10px;
+    background-color: white;
+    width: calc(100% - @sidebar-width);
+
+    #ftp-download-queue-files-list{
+        width: 100%;
+        height: 150px;
+        overflow-y: hidden;
+        li{
+            direction: ltr;
+            overflow-y: auto;
+            .uk-padding-small();
+        }
+    }
+}
+
+
+//////////////////////
+// UIKIT COMPONENTS //
+//////////////////////
+.uk-button-primary {
+    background-color: @global-link-color!important;
+    color: white!important;
+    .uk-box-shadow-medium();
+}
+/* Hover + Focus */
+.uk-button-primary:hover,
+.uk-button-primary:focus {
+    background-color: @global-link-hover-color!important;
+    color: @button-primary-hover-color!important;
+}
+/* OnClick + Active */
+.uk-button-primary:active,
+.uk-button-primary.uk-active {
+    background-color: @global-link-hover-color!important;
+    color: @button-primary-active-color!important;
+}
+
+.uk-notification{
+    bottom: 0;
+    margin-left: 0;
+    background: white;
+    left: @sidebar-width;
+    width: calc(100% - @sidebar-width);
+    .uk-box-shadow-medium();
+    .uk-notification-message{
+        background: white;
+    }
+}
+
+////////////////////////////
+// VUE ROUTER TRANSITIONS //
+////////////////////////////
+.fade-enter-active, .fade-leave-active{
+    transition: .2s;
+}
+.fade-enter, .fade-leave-to{
+    opacity: 0;
+}
