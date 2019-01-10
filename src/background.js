@@ -8,6 +8,7 @@ import {
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 const {autoUpdater} = require("electron-updater");
+const log = require('electron-log');
 
 import * as Splashscreen from "@trodi/electron-splashscreen";
 
@@ -19,6 +20,13 @@ let win
 
 // Standard scheme must be registered before the app is ready
 protocol.registerStandardSchemes(['app'], { secure: true })
+
+//////////////////////
+// AutoUpdater Logs //
+//////////////////////
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 function createWindow () {
 
