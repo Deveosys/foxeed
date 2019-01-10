@@ -28,6 +28,9 @@ autoUpdater.logger = log;
 autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
+///////////////////////////
+// Create default window //
+///////////////////////////
 function createWindow () {
 
   let winOptions = {
@@ -99,31 +102,41 @@ app.on('ready', async () => {
 /////////////////
 // AutoUpdater //
 /////////////////
+app.on('ready', function()  {
+  autoUpdater.checkForUpdates();
+});
+
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
 })
+
 autoUpdater.on('update-available', (info) => {
   sendStatusToWindow('Update available.');
 })
+
 autoUpdater.on('update-not-available', (info) => {
   sendStatusToWindow('Update not available.');
 })
+
 autoUpdater.on('error', (err) => {
   sendStatusToWindow('Error in auto-updater. ' + err);
 })
+
 autoUpdater.on('download-progress', (progressObj) => {
   let log_message = "Download speed: " + progressObj.bytesPerSecond;
   log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
   log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
   sendStatusToWindow(log_message);
 })
-autoUpdater.on('update-downloaded', (info) => {
-  sendStatusToWindow('Update downloaded');
-});
 
-app.on('ready', async () => {
-  autoUpdater.checkForUpdatesAndNotify();
+autoUpdater.on('update-downloaded', (info) => {
+  autoUpdater.quitAndInstall();  
 })
+
+// app.on('ready', async () => {
+//   autoUpdater.checkForUpdatesAndNotify();
+// })
+
 
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
