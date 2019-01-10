@@ -97,6 +97,7 @@ app.on('ready', async () => {
     await installVueDevtools()
   }
   createWindow()
+  autoUpdater.checkForUpdates();
 })
 
 /////////////////
@@ -107,10 +108,6 @@ function sendStatusToWindow(text) {
   log.info(text);
   win.webContents.send('message', text);
 }
-
-app.on('ready', function()  {
-  autoUpdater.checkForUpdates();
-});
 
 autoUpdater.on('checking-for-update', () => {
   sendStatusToWindow('Checking for update...');
