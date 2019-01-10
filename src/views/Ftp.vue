@@ -83,7 +83,7 @@
 
 				<!-- DIRECTORY ITEM -->
 				<a v-if="item.type == 'd'" href="#" class="uk-card uk-card-body uk-card-default foxeed-block uk-flex uk-padding-small uk-padding-remove"  @click.prevent="goto(item.name)" @click.right.prevent="setContextMenu">
-					<div class="uk-padding-small uk-background-secondary">
+					<div class="icon-container uk-padding-small uk-text-primary">
 						<i class="fas fa-folder"></i>
 					</div>
 					<div class="uk-width-expand uk-text-truncate uk-padding-small">
@@ -93,7 +93,7 @@
 
 				<!-- FILE ITEM -->
 				<a v-else="" href="#" class="uk-card uk-card-body uk-card-default foxeed-block uk-flex uk-padding-small uk-padding-remove" @click.right.prevent="setContextMenu">
-					<div class="uk-padding-small uk-background-secondary">
+					<div class="icon-container uk-padding-small">
 						<i class="fas fa-file"></i>
 					</div>
 					<div class="uk-width-expand uk-text-truncate uk-padding-small">

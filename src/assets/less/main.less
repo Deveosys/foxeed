@@ -63,6 +63,16 @@
     #ftp-download-queue{
         background-color: @dark-block;
     }
+    #ftp-current-directory-container{
+        .ftp-current-directory-item{
+            .icon-container{
+                .uk-background-secondary();
+                &.uk-text-primary{
+                    .uk-text-primary()!important;
+                }
+            }
+        }
+    }
 }
 
 .foxeed-block{
@@ -216,6 +226,9 @@
         margin-bottom: 5px;
         &:not(.visible) {
             display: none;
+        }
+        .icon-container{
+            .uk-background-muted();
         }
     }
 
