@@ -24,6 +24,31 @@
 </template>
 
 <script>
+    const ipcRenderer = require('electron').ipcRenderer
+    import UIkit from 'uikit'
+
+    ipcRenderer.on('auto-update', (event, message) => {
+        if (message !== "update-downloaded") {
+            UIkit.notification({
+                message: message,
+                status: 'warning',
+                pos: 'bottom-center',
+            })
+        } else {
+            UIkit.modal.confirm(
+             "Une mise à jour de l'application a été téléchargée et est prête à être installée. Voulez-vous l'installer maintenant ? (l'application sera fermée)", 
+             {
+                 labels: {
+                     ok: 'Mettre à jour maintenant', 
+                     cancel: 'Mettre à jour la prochaine fois'
+                 }
+             }).then(function() {
+                 ipcRenderer.send('quit-and-install-update', "");
+             }, function () {
+             });
+        }
+    })
+
     export default {
         name: 'app',
         computed: {

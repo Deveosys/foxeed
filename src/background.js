@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -106,7 +106,7 @@ app.on('ready', async () => {
 
 function sendStatusToWindow(text) {
   log.info(text);
-  win.webContents.send('message', text);
+  win.webContents.send('auto-update', text);
 }
 
 autoUpdater.on('checking-for-update', () => {
@@ -133,12 +133,12 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 
 autoUpdater.on('update-downloaded', (info) => {
-  autoUpdater.quitAndInstall();  
+  sendStatusToWindow('update-downloaded');
 })
 
-// app.on('ready', async () => {
-//   autoUpdater.checkForUpdatesAndNotify();
-// })
+ipcMain.on('quit-and-install-update', (event, arg) => {
+  autoUpdater.quitAndInstall();
+})
 
 
 // Exit cleanly on request from parent process in development mode.
