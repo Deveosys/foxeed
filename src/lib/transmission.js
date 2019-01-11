@@ -134,7 +134,7 @@ export default class Transmission extends events_1.EventEmitter {
             this.status[status] = index;
         });
         if (this.options.username != null) {
-            this.authHeader = 'Basic ' + new Buffer(this.options.username + (this.options.password ? ':' + this.options.password : '')).toString('base64');
+            this.authHeader = 'Basic ' + new Buffer.from(this.options.username + (this.options.password ? ':' + this.options.password : '')).toString('base64');
             //this.authHeader = encodeURI(this.authHeader);
             //console.log(this.authHeader);
         }
