@@ -36,11 +36,11 @@
             })
         } else {
             UIkit.modal.confirm(
-             "Une mise à jour de l'application a été téléchargée et est prête à être installée. Voulez-vous l'installer maintenant ? (l'application sera fermée)", 
+                "<h3>Une mise à jour de l'application a été téléchargée et est prête à être installée.</h3> Souhaitez-vous l'installer maintenant (redémarrage de Foxeed) ou plus tard (lors de la fermeture de Foxeed) ?",
              {
                  labels: {
-                     ok: 'Mettre à jour maintenant', 
-                     cancel: 'Mettre à jour la prochaine fois'
+                     ok: 'Mettre à jour', 
+                     cancel: 'Mettre à jour à la fermeture de Foxeed'
                  }
              }).then(function() {
                  ipcRenderer.send('quit-and-install-update', "");
@@ -55,20 +55,6 @@
             theme() {
                 return this.$store.state.theme
             }
-        },
-        created() {
-            // this.initDowloadQueue()
-        },
-        methods: {
-            // initDowloadQueue() {
-            //     let downloadQueue = this.$store.state.downloadQueue
-            //     console.log(downloadQueue)
-            //     downloadQueue.forEach(function( download, index) {
-            //         download.processing = false
-            //     })
-            //     console.log(downloadQueue)
-            //     // this.$store.commit('', downloadQueue)
-            // }
         }
     }
 </script>

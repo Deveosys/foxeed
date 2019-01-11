@@ -95,9 +95,12 @@ app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     await installVueDevtools()
+    createWindow()
+
+  } else {
+    autoUpdater.checkForUpdates();
+    createWindow()
   }
-  createWindow()
-  autoUpdater.checkForUpdates();
 })
 
 /////////////////
@@ -110,15 +113,15 @@ function sendStatusToWindow(text) {
 }
 
 autoUpdater.on('checking-for-update', () => {
-  sendStatusToWindow('Checking for update...');
+  sendStatusToWindow('Recherche de mise à jour...');
 })
 
 autoUpdater.on('update-available', (info) => {
-  sendStatusToWindow('Update available.');
+  sendStatusToWindow('La dernière mise à jour disponible est en cours de téléchargement...');
 })
 
 autoUpdater.on('update-not-available', (info) => {
-  sendStatusToWindow('Update not available.');
+  sendStatusToWindow('Pas de mise à jour disponible.');
 })
 
 autoUpdater.on('error', (err) => {
