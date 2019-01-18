@@ -32,16 +32,23 @@
 						<i class="fas fa-arrow-down"></i> {{ globalDownloadSpeed | prettyBytes }}/s <i class="fas fa-arrow-up"></i> {{ globalUploadSpeed | prettyBytes }}/s
 					</div>
 				</div>
-				<div class="">
-					<a href="#" class="foxeed-button uk-inline" type="button" @click.prevent="addTorrents" uk-tooltip="Ajouter un fichier Torrent">
-						<i class="fas fa-file-upload uk-position-center"></i>
-					</a>
-					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="startAll" uk-tooltip="Tout Démarrer">
-						<i class="fas fa-reply-all uk-position-center"></i>
-					</a>
-					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="stopAll" uk-tooltip="Tout arrêter">
-						<i class="fas fa-stop uk-position-center"></i>
-					</a>
+				<div class="uk-flex uk-flex-between">
+                    
+                    <div>
+    					<a href="#" class="foxeed-button uk-inline" type="button" @click.prevent="addTorrents" uk-tooltip="Ajouter un fichier Torrent">
+    						<i class="fas fa-file-upload uk-position-center"></i>
+    					</a>
+    					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="startAll" uk-tooltip="Tout Démarrer">
+    						<i class="fas fa-reply-all uk-position-center"></i>
+    					</a>
+    					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="stopAll" uk-tooltip="Tout arrêter">
+    						<i class="fas fa-stop uk-position-center"></i>
+    					</a>
+                    </div>
+
+                    <div>
+                        {{ globalSize | prettyBytes }} <i class="fas fa-database"></i>
+                    </div>
 				</div>
 			</div>
 			
@@ -98,7 +105,8 @@
 		data() {
             return {
                 sorts: sorts,
-            	loading: true,
+                globalSize: 0,
+                loading: true,
                 torrents: undefined,
                 globalUploadSpeed: 0,
                 globalDownloadSpeed: 0,
@@ -164,6 +172,7 @@
         			torrents.reverse()
         		}
 
+                this.globalSize = 0
         		this.globalUploadSpeed = 0
         		this.globalDownloadSpeed = 0
         		let torrentsCategories = this.initialTorrentsCategories()
@@ -172,7 +181,8 @@
         			torrent.loading = vm.checkTorrentLoading(torrent)
         			
         			// Computed global upload / download speed
-        			vm.globalUploadSpeed += torrent.rateUpload
+        			vm.globalSize += torrent.totalSize * torrent.percentDone
+                    vm.globalUploadSpeed += torrent.rateUpload
                 	vm.globalDownloadSpeed += torrent.rateDownload
 
         			// Divide torrents by category
