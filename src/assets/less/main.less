@@ -8,6 +8,8 @@
 @sidebar-width: 70px;
 @sidebar-item-margin: 10px;
 
+@log-container-height: 30px;
+
 @torrent-info-width: 350px;
 
 @dark-background: #1E2125;
@@ -79,6 +81,19 @@
     .uk-box-shadow-medium();
 }
 
+.foxeed-button{
+    border-radius: 50%;
+    font-size: 16px;
+    display: inline-block;
+    width: calc(@sidebar-width - (@sidebar-item-margin * 2));
+    height: calc(@sidebar-width - (@sidebar-item-margin * 2));
+    transition: .3s ease-in-out;
+    &:hover{
+        color: white;
+        background: @global-link-hover-color;
+    }
+}
+
 #nav{
     left: 0;
     z-index: 1;
@@ -103,16 +118,27 @@
     }
 }
 
-.foxeed-button{
-    border-radius: 50%;
-    font-size: 16px;
-    display: inline-block;
-    width: calc(@sidebar-width - (@sidebar-item-margin * 2));
-    height: calc(@sidebar-width - (@sidebar-item-margin * 2));
-    transition: .3s ease-in-out;
-    &:hover{
-        color: white;
-        background: @global-link-hover-color;
+#log-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    height: @log-container-height;
+    width: calc(100% - @sidebar-width);
+    >a{
+        display: inline-block;
+        width: @log-container-height;
+        height: @log-container-height;
+        text-align: center;
+        line-height: @log-container-height;
+    }
+    >p{
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        text-align: right;
+        line-height: @log-container-height;
+        width: calc(100% - @log-container-height - 10px);
     }
 }
 
@@ -244,7 +270,7 @@
 
 #ftp-download-queue{
     right: 0;
-    bottom: 0;
+    bottom: @log-container-height;
     z-index: 1;
     position: fixed;
     padding-top: 10px;

@@ -3,7 +3,6 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Transmission from './lib/transmission.js'
-import PromiseFtp from 'promise-ftp'
 
 require('uikit')
 
@@ -21,6 +20,17 @@ const {webFrame} = require('electron')
 ///////////////////////////////
 const transmission = new Transmission(store.state.transmissionOptions)
 Vue.prototype.$transmission = transmission
+
+// LOG MESSAGES
+Vue.prototype.$logMessages = []
+Vue.prototype.$log = function(message) {
+    this.$logMessages.push({
+        id: this.$logMessages.length + 1,
+        text: message.text,
+        status: message.status
+    })
+}
+
 
 //////////////////////////////
 // FTP QUEUES               //

@@ -20,6 +20,30 @@
                 <router-view></router-view>
             </transition>
         </div>
+
+        <div id="log-container" class="foxeed-block uk-flex uk-flex-between">
+            <p>
+                {{ lastLogMessage }}
+            </p>
+
+            <a href="#" uk-toggle="target: #log-modal">
+                <i class="far fa-eye"></i>
+            </a>
+        </div>
+
+        <div id="log-modal" uk-modal>
+            <div class="uk-modal-dialog uk-modal-body">
+                <button class="uk-modal-close-default" type="button" uk-close></button>
+                <h2 class="uk-modal-title">
+                    Activités
+                </h2>
+                <ul>
+                    <li v-for="message in logMessages" :key="message.id">
+                        {{ message.text }}
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -29,6 +53,10 @@
 
     ipcRenderer.on('auto-update', (event, message) => {
         if (message !== "update-downloaded") {
+            this.$log({
+                text: message,
+                status: 'info'
+            })
             UIkit.notification({
                 message: message,
                 status: 'warning',
@@ -51,9 +79,17 @@
 
     export default {
         name: 'app',
+        data() {
+            return {
+                logMessages: this.$logMessages
+            }
+        },
         computed: {
             theme() {
                 return this.$store.state.theme
+            },
+            lastLogMessage() {
+                return this.$logMessages.length > 0 ? this.$logMessages[this.$logMessages.length - 1].text : ""
             }
         }
     }
