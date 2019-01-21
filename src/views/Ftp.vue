@@ -4,7 +4,7 @@
 		<!-- CONTEXT MENU -->
 		<div id="context-menu" class="context-menu uk-card uk-card-default uk-card-body foxeed-block" v-bind:class="{ hidden: !contextMenu.show  }" v-bind:style="contextMenu.position" >
 			<ul>
-				<li v-for="item in contextMenu.items">
+				<li v-for="item in contextMenu.items" :key="item.label">
 					<a href="#" @click.prevent="item.action(item.params)">{{ item.label }}</a>
 				</li>
 			</ul>
@@ -33,7 +33,7 @@
 				    <div uk-dropdown="pos: bottom-justify">
 				        <ul class="uk-nav uk-dropdown-nav">
 
-				            <li v-for="sort in sorts">
+				            <li v-for="sort in sorts" :key="sort.id">
 				            	<a href="#" @click="setSortBy(sort)">
 				            		{{ sort.label }}
 				            		<i v-if="sort.id == sortBy.id" class="fas fa-check"></i>
@@ -69,7 +69,7 @@
 			</div>
 			<div class="uk-margin-left">
 				<ul class="uk-breadcrumb">
-				    <li v-for="(dir, index) in breadcrumb">
+				    <li v-for="(dir, index) in breadcrumb" :key="index">
 				    	<span v-if="index == breadcrumb.length - 1">{{ dir.label }}</span>
 				    	<a v-else="" href="#" @click.prevent="goto(dir.goto)">{{ dir.label }}</a>
 				    </li>
@@ -79,7 +79,7 @@
 
 		<!-- CURRENT DIRECTORY DISPAY -->
 		<div id="ftp-current-directory-container" v-if="currentDirContentList.length > 0" class="uk-clearfix" v-bind:class="{ 'grid-display' : displayGrid}">
-			<div v-for="(item, index) in currentDirContentList" class="ftp-current-directory-item uk-grid-collapse" :data-id="item.id" v-bind:class="{ visible: item.visible }">
+			<div v-for="(item) in currentDirContentList" class="ftp-current-directory-item uk-grid-collapse" :data-id="item.id" v-bind:class="{ visible: item.visible }" :key="item.id">
 
 				<!-- DIRECTORY ITEM -->
 				<a v-if="item.type == 'd'" href="#" class="uk-card uk-card-body uk-card-default foxeed-block uk-flex uk-padding-small uk-padding-remove"  @click.prevent="goto(item.name)" @click.right.prevent="setContextMenu">

@@ -1,59 +1,64 @@
 <template>
-	<div v-if="loading" class="uk-width-1-1 uk-flex">
-		<div>
+	
+  <div v-if="loading" class="uk-width-1-1 uk-flex">
+		
+    <div>
 			<div id="torrents-loading" data-uk-spinner="ratio: .5"></div>
 		</div>
-		<div class="uk-margin-small-left">
+		
+    <div class="uk-margin-small-left">
 			<span>Connexion au serveur...</span>
 			<br>
 			<span class="uk-text-small">Cela ne devrait pas prendre plus de quelques secondes, sinon, pensez à vérifier votre connexion internet et les <router-link to="/settings">paramètres de connexion à transmission</router-link></span>
 		</div>
+
 	</div>
 	
 	<div v-else>
 		<div id="torrent-container" v-bind:class="{ 'torrent-info-opened': torrentInfo.opened }">
 			<div  class="uk-card uk-card-default uk-card-body uk-margin-large-bottom foxeed-block">
 				<div class="uk-flex uk-flex-between uk-margin-bottom">
-					<div class="uk-inline">
-					    <button class="uk-button uk-button-small uk-button-link" type="button">Trié par : {{ sortBy.label }}</button>
-					    <div uk-dropdown="pos: bottom-justify">
-					        <ul class="uk-nav uk-dropdown-nav">
+				
+        	<div class="uk-inline">
+            <button class="uk-button uk-button-small uk-button-link" type="button">Trié par : {{ sortBy.label }}</button>
+            <div uk-dropdown="pos: bottom-justify">
+              <ul class="uk-nav uk-dropdown-nav">
 
-					            <li v-for="sort in sorts">
-					            	<a href="#" @click="setSortBy(sort)">
-					            		{{ sort.label }}
-					            		<i v-if="sort.id == sortBy.id" class="fas fa-check"></i>
-					            	</a>
-					            </li>
-					        </ul>
-					    </div>
+                <li v-for="sort in sorts" v-bind:key="sort.id">
+                  <a href="#" @click="setSortBy(sort)">
+                    {{ sort.label }}
+                    <i v-if="sort.id == sortBy.id" class="fas fa-check"></i>
+                  </a>
+                </li>
+              </ul>
+					  </div>
 					</div>
+
 					<div >
 						<i class="fas fa-arrow-down"></i> {{ globalDownloadSpeed | prettyBytes }}/s <i class="fas fa-arrow-up"></i> {{ globalUploadSpeed | prettyBytes }}/s
 					</div>
+
 				</div>
 				<div class="uk-flex uk-flex-between">
-                    
-                    <div>
-    					<a href="#" class="foxeed-button uk-inline" type="button" @click.prevent="addTorrents" uk-tooltip="Ajouter un fichier Torrent">
-    						<i class="fas fa-file-upload uk-position-center"></i>
-    					</a>
-    					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="startAll" uk-tooltip="Tout Démarrer">
-    						<i class="fas fa-reply-all uk-position-center"></i>
-    					</a>
-    					<a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="stopAll" uk-tooltip="Tout arrêter">
-    						<i class="fas fa-stop uk-position-center"></i>
-    					</a>
-                    </div>
+          <div>
+            <a href="#" class="foxeed-button uk-inline" type="button" @click.prevent="addTorrents" uk-tooltip="Ajouter un fichier Torrent">
+              <i class="fas fa-file-upload uk-position-center"></i>
+            </a>
+            <a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="startAll" uk-tooltip="Tout Démarrer">
+              <i class="fas fa-reply-all uk-position-center"></i>
+            </a>
+            <a href="#" class="foxeed-button uk-inline uk-margin-small-left" type="button" @click.prevent="stopAll" uk-tooltip="Tout arrêter">
+              <i class="fas fa-stop uk-position-center"></i>
+            </a>
+          </div>
 
-                    <div>
-                        {{ globalSize | prettyBytes }} <i class="fas fa-database"></i>
-                    </div>
+          <div>
+              {{ globalSize | prettyBytes }} <i class="fas fa-database"></i>
+          </div>
 				</div>
 			</div>
-			
 
-			<div v-for="(category, index) in torrents" v-if="category.count > 0"  class="uk-card uk-card-default uk-card-body uk-margin-bottom foxeed-block">
+			<div v-for="(category, index) in torrentsByCategory" v-bind:key="index"  class="uk-card uk-card-default uk-card-body uk-margin-bottom foxeed-block">
 				<ul uk-accordion="multiple: true">
     				<li :class="{'uk-open' : index == 'DOWNLOAD'}">
     					<a  class="uk-accordion-title" href="#">
@@ -62,7 +67,7 @@
 						<div class="uk-accordion-content">
 							<ul id="torrents-list" class="uk-list uk-list-large uk-list-divider">
 								<Torrent 
-									v-for="(torrent, index) in category.torrents" 
+									v-for="(torrent) in category.torrents" 
 									v-bind:key="torrent.hash" 
 									v-bind:torrent="torrent" 
 									@openInfo="openInfo" 
@@ -85,13 +90,13 @@
 	// @ is an alias to /src
 	import Torrent from '@/components/Torrent.vue'
 	import TorrentInfo from '@/components/TorrentInfo.vue'
+import { setInterval } from 'timers';
 	const { dialog } = require('electron').remote
-	const fs = require('fs')
 
 	var sorts = [
     	{ id: 'name', 'label' : 'Nom'},
     	{ id: 'addedDate', 'label' : 'Age'},
-		{ id: 'totalSize', 'label' : 'Taille'},
+		  { id: 'totalSize', 'label' : 'Taille'},
     	{ id: 'rateDownload', 'label' : 'Download Speed'},
     	{ id: 'rateUpload', 'label' : 'Upload Speed'},
 	]
@@ -102,37 +107,40 @@
 			Torrent,
 			TorrentInfo
 		},
-		data() {
-            return {
-                sorts: sorts,
-                globalSize: 0,
-                loading: true,
-                torrents: undefined,
-                globalUploadSpeed: 0,
-                globalDownloadSpeed: 0,
-                torrentInfo: {
-                	'opened': false,
-                	'torrent': {}
-                },
-                loadingTorrents: {},
-            }
+    
+    data() {
+      return {
+        sorts: sorts,
+        globalSize: 0,
+        loading: true,
+        torrentsByCategory: {},
+        globalUploadSpeed: 0,
+        globalDownloadSpeed: 0,
+        torrentInfo: {
+          'opened': false,
+          'torrent': {}
         },
-        computed: {
+        loadingTorrents: {},
+      }
+    },
+    
+    computed: {
 			sortBy () {
 				return this.$store.state.torrentsSortBy
 			}
-		},
-        methods: {
-	        /////////////
-        	// DISPLAY //
-	        /////////////
-        	setSortBy(sort) {
-        		this.$store.commit('setTorrentsSortBy', sort)
-        	},
+    },
+    
+    methods: {
+      /////////////
+      // DISPLAY //
+      /////////////
+      setSortBy(sort) {
+        this.$store.commit('setTorrentsSortBy', sort)
+      },
 
-	        ///////////////////
-        	// TORRENT LIST  //
-	        ///////////////////
+      ///////////////////
+      // TORRENT LIST  //
+      ///////////////////
 			initialTorrentsCategories () {
 				return {
 					'DOWNLOAD': { torrents: [], count: 0 },
@@ -144,142 +152,150 @@
 					'CHECK': { torrents: [], count: 0 },
 					'ISOLATED': { torrents: [], count: 0 }
 				}
-			},
-        	getTorrents() {
+      },
+      
+      getTorrents() {
 				var vm = this
 				this.$transmission.all()
-					.then(function(data){
-						vm.sortTorrents(data.torrents)
-						if (vm.torrents !== undefined) {
-							vm.loading = false
-						}
-					})
-					.catch(function(error) {
-						console.log(error)
-						vm.loading = true
-					})
-        	},
-        	sortTorrents(torrents = this.torrents) {
+        .then(function(data){
+          vm.sortTorrents(data.torrents)
+          if (vm.torrentsByCategory !== undefined) {
+            vm.loading = false
+          }
+        })
+        .catch(function(error) {
+          console.log(error)
+          vm.loading = true
+        })
+      },
+      
+      sortTorrents(torrents) {
 
-        		// Sort all torrents without regarding category
-        		var vm = this
-        		torrents.sort( function(a, b) {
-					if (a[vm.sortBy.id] < b[vm.sortBy.id]) return -1;
-					if (a[vm.sortBy.id] > b[vm.sortBy.id]) return 1;
-					return 0;
-        		})
-        		if (['addedDate', 'rateDownload', 'rateUpload'].includes(vm.sortBy.id)) {
-        			torrents.reverse()
-        		}
-
-                this.globalSize = 0
-        		this.globalUploadSpeed = 0
-        		this.globalDownloadSpeed = 0
-        		let torrentsCategories = this.initialTorrentsCategories()
-        		torrents.forEach(function(torrent, index) {
-        			// add loading property to each torrent for binding
-        			torrent.loading = vm.checkTorrentLoading(torrent)
-        			
-        			// Computed global upload / download speed
-        			vm.globalSize += torrent.totalSize * torrent.percentDone
-                    vm.globalUploadSpeed += torrent.rateUpload
-                	vm.globalDownloadSpeed += torrent.rateDownload
-
-        			// Divide torrents by category
-        			let catLabel = vm.$transmission.statusArray[torrent.status]
-        			torrentsCategories[catLabel].count++
-        			torrentsCategories[catLabel].torrents.push(torrent)
-        		})
-
-        		this.torrents = torrentsCategories
-        	},
-        	checkTorrentLoading(torrent) {
-        		if (this.loadingTorrents[torrent.id] === torrent.status) {
-        			return true
-        		}
-        		delete this.loadingTorrents[torrent.id]
-        		return false
-        	},
-
-	        /////////////////////////
-        	// TORRENT INFO ACTION //
-	        /////////////////////////
-            openInfo(torrent) {
-            	this.torrentInfo.opened = true
-            	this.torrentInfo.torrent = torrent
-            },
-            closeInfo() {
-            	this.torrentInfo.opened = false
-            },
-
-            /////////////////////
-            // TORRENT ACTIONS //
-            /////////////////////
-            stopAll() {
-            	this.$transmission.stopAll()
-            },
-            startAll() {
-            	this.$transmission.startAll()
-            },
-            addTorrents() {
-            	let vm = this
-            	dialog.showOpenDialog({
-            		'properties': [
-            			'openFile',
-            			'multiSelections'
-            		],
-            		'filters': [
-            			{ name: 'Fichiers Torrent', extensions: ['torrent'] },
-            		]
-            	}, function (files) {
-
-            		if (files === undefined) return
-
-            		files.forEach(function (file, index) {
-            			vm.$transmission.addFile(file)
-            		})
-            	})
-            },
-            toggleTorrentStatus(torrent) {
-                torrent.loading = true
-                this.loadingTorrents[torrent.id] = torrent.status
-                if (this.$transmission.statusArray[torrent.status] === 'STOPPED') {
-                	this.$transmission.startNow(torrent.id)
-                } else {
-                	this.$transmission.stop(torrent.id)
-                }
-                
-            },
-            removeTorrent(torrent) {
-                torrent.loading = true
-                this.loadingTorrents[torrent.id] = torrent.status
-                this.$transmission.remove(torrent.id, true)
-            },
-        },
-        created() {
-        	this.torrent = undefined
-        	this.getTorrents()
-        	setInterval(this.getTorrents, 1500)
-
-	        ////////////////////////////////
-        	// DROP FILES TO ADD TORRENT  //
-	        ////////////////////////////////
-        	let vm = this
-			window.ondragover = function(e) {
-				e.preventDefault();
-				e.dataTransfer.dropEffect = 'copy';
-				return false;
-			};
-        	window.ondrop = function(e) {
-				e.preventDefault();
-				for (var i = 0; i < e.dataTransfer.files.length; ++i) {
-        			vm.$transmission.addFile(e.dataTransfer.files[i].path).then(function(e) {
-        				console.log(e)
-        			})
-				}
-				return false;
-			};
-
+        // Sort all torrents without regarding category
+        var vm = this
+        torrents.sort( function(a, b) {
+          if (a[vm.sortBy.id] < b[vm.sortBy.id]) return -1;
+          if (a[vm.sortBy.id] > b[vm.sortBy.id]) return 1;
+          return 0;
+        })
+        
+        if (['addedDate', 'rateDownload', 'rateUpload'].includes(vm.sortBy.id)) {
+          torrents.reverse()
         }
-	}
+
+        this.globalSize = 0
+        this.globalUploadSpeed = 0
+        this.globalDownloadSpeed = 0
+				let torrentsByCategory = this.initialTorrentsCategories()
+          torrents.forEach(function(torrent) {
+
+          // add loading property to each torrent for binding
+          torrent.loading = vm.checkTorrentLoading(torrent)
+          
+          // Computed global upload / download speed
+          vm.globalSize += torrent.totalSize * torrent.percentDone
+                vm.globalUploadSpeed += torrent.rateUpload
+              vm.globalDownloadSpeed += torrent.rateDownload
+
+          // Divide torrents by category
+          let catLabel = vm.$transmission.statusArray[torrent.status]
+          torrentsByCategory[catLabel].count++
+          torrentsByCategory[catLabel].torrents.push(torrent)
+				})
+				
+				for (let cat in this.initialTorrentsCategories()) {
+					if (torrentsByCategory[cat].count == 0) {
+						delete torrentsByCategory[cat]
+          }
+				}
+        vm.torrentsByCategory = torrentsByCategory
+      },
+      
+      checkTorrentLoading(torrent) {
+        if (this.loadingTorrents[torrent.id] === torrent.status) {
+          return true
+        }
+        delete this.loadingTorrents[torrent.id]
+        return false
+      },
+
+      /////////////////////////
+      // TORRENT INFO ACTION //
+      /////////////////////////
+      openInfo(torrent) {
+        this.torrentInfo.opened = true
+        this.torrentInfo.torrent = torrent
+      },
+      closeInfo() {
+        this.torrentInfo.opened = false
+      },
+
+      /////////////////////
+      // TORRENT ACTIONS //
+      /////////////////////
+      stopAll() {
+        this.$transmission.stopAll()
+      },
+      startAll() {
+        this.$transmission.startAll()
+      },
+      addTorrents() {
+        let vm = this
+        dialog.showOpenDialog({
+          'properties': [
+            'openFile',
+            'multiSelections'
+          ],
+          'filters': [
+            { name: 'Fichiers Torrent', extensions: ['torrent'] },
+          ]
+        }, function (files) {
+
+          if (files === undefined) return
+
+          files.forEach(function (file) {
+            vm.$transmission.addFile(file)
+          })
+        })
+      },
+      toggleTorrentStatus(torrent) {
+          torrent.loading = true
+          this.loadingTorrents[torrent.id] = torrent.status
+          if (this.$transmission.statusArray[torrent.status] === 'STOPPED') {
+            this.$transmission.startNow(torrent.id)
+          } else {
+            this.$transmission.stop(torrent.id)
+          }
+          
+      },
+      removeTorrent(torrent) {
+          torrent.loading = true
+          this.loadingTorrents[torrent.id] = torrent.status
+          this.$transmission.remove(torrent.id, true)
+      },
+    },
+    created() {
+      this.getTorrents()
+      setInterval(this.getTorrents, 1500)
+
+      ////////////////////////////////
+      // DROP FILES TO ADD TORRENT  //
+      ////////////////////////////////
+      let vm = this
+      window.ondragover = function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+        return false;
+      };
+      window.ondrop = function(e) {
+        e.preventDefault();
+        for (var i = 0; i < e.dataTransfer.files.length; ++i) {
+          vm.$transmission.addFile(e.dataTransfer.files[i].path).then(function(e) {
+            console.log(e)
+          })
+        }
+        return false;
+      }
+    }
+  }
 </script>
