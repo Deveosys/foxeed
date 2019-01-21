@@ -21,7 +21,8 @@
     "electron:build:mac": "vue-cli-service electron:build --mac",
     "publish:linux": "vue-cli-service electron:build --linux -p always",
     "publish:windows": "vue-cli-service electron:build --win -p always",
-    "publish:mac": "vue-cli-service electron:build --mac -p always"
+    "publish:mac": "vue-cli-service electron:build --mac -p always",
+    "publish:all": "vue-cli-service electron:build -lmw -p always"
   },
   "dependencies": {
     "vue": "^2.5.22",
