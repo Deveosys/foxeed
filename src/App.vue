@@ -57,11 +57,6 @@
                 text: message,
                 status: 'info'
             })
-            UIkit.notification({
-                message: message,
-                status: 'warning',
-                pos: 'bottom-center',
-            })
         } else {
             UIkit.modal.confirm(
                 "<h3>Une mise à jour de l'application a été téléchargée et est prête à être installée.</h3> Souhaitez-vous l'installer maintenant (redémarrage de Foxeed) ou plus tard (lors de la fermeture de Foxeed) ?",

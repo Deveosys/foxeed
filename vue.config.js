@@ -15,7 +15,8 @@ module.exports = {
 				mac: {
 					icon: "./public/icons/icon.icns",
 					target: [
-						"dmg"
+						"dmg",
+						"zip"
 					]
 				},
 				win: {
