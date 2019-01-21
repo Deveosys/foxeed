@@ -128,10 +128,9 @@
                 vm.yggTorrent.url = "https://" + JSON.parse(response).url + '/'
                 vm.login()
               }).catch(function() {
-                UIkit.notification({
-                  message: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de récupérer l'adresse de YggTorrent, verifiez votre connexion internet",
-                  status: 'danger',
-                  pos: 'bottom-center',
+                this.$log({
+                    text: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de récupérer l'adresse de YggTorrent, verifiez votre connexion internet",
+                    status: 'info'
                 })
               })
             },
@@ -157,10 +156,9 @@
                     fs.writeFile(path, response.body, function() {
                         vm.$transmission.addFile(path)
                         .then(function() {
-                            UIkit.notification({
-                                message: "<i class='fas fa-check uk-margin-small-right'></i> <strong>"+ torrent.title +"</strong> ajouté aux téléchargements",
-                                status: 'success',
-                                pos: 'bottom-center',
+                            this.$log({
+                                text: "<i class='fas fa-check uk-margin-small-right'></i> <strong>"+ torrent.title +"</strong> ajouté aux téléchargements",
+                                status: 'success'
                             })
                         })
                         .catch(function() {
@@ -194,10 +192,9 @@
                     vm.search()
                     // console.log('loged in')
                 }).catch(function (err) {
-                    UIkit.notification({
-                        message: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de se connecter à YggTorrent, verifiez vos identifiants dans les options",
-                        status: 'danger',
-                        pos: 'bottom-center',
+                    this.$log({
+                        text: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de se connecter à YggTorrent, verifiez vos identifiants dans les options",
+                        status: 'danger'
                     })
                     console.log('log in error : ' + err)
                 });
