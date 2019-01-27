@@ -128,7 +128,7 @@
                 vm.yggTorrent.url = "https://" + JSON.parse(response).url + '/'
                 vm.login()
               }).catch(function() {
-                this.$log({
+                vm.$log({
                     text: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de récupérer l'adresse de YggTorrent, verifiez votre connexion internet",
                     status: 'info'
                 })
@@ -156,7 +156,7 @@
                     fs.writeFile(path, response.body, function() {
                         vm.$transmission.addFile(path)
                         .then(function() {
-                            this.$log({
+                            vm.$log({
                                 text: "<i class='fas fa-check uk-margin-small-right'></i> <strong>"+ torrent.title +"</strong> ajouté aux téléchargements",
                                 status: 'success'
                             })
@@ -179,20 +179,22 @@
             login() {
                 // YGGTORRENT AUTHENTICATION
                 let vm = this
-                console.log(this.yggTorrent.url + 'user/login')
-                request({
+
+                let options = {
                     method: 'POST',
                     uri: this.yggTorrent.url + 'user/login',
+                    headers: { 'Connection': 'Keep-Alive' },
                     jar: this.cookieJar,
                     form: {
                         id: this.yggTorrent.username,
                         pass: this.yggTorrent.password
-                    },
-                }).then(function (body) {
+                    }
+                }
+                request(options).then(function (body) {
                     vm.search()
                     // console.log('loged in')
                 }).catch(function (err) {
-                    this.$log({
+                    vm.$log({
                         text: "<i class='fas fa-exclamation-circle uk-margin-small-right'></i>Impossible de se connecter à YggTorrent, verifiez vos identifiants dans les options",
                         status: 'danger'
                     })

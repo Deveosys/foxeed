@@ -23,7 +23,7 @@
 
         <div id="log-container" class="foxeed-block uk-flex uk-flex-between">
             <p>
-                {{ lastLogMessage }}
+                <span v-html="lastLogMessage"></span>
             </p>
 
             <a href="#" uk-toggle="target: #log-modal">
@@ -31,7 +31,7 @@
             </a>
         </div>
 
-        <div id="log-modal" uk-modal>
+        <div id="log-modal" class="uk-modal-container" uk-modal>
             <div class="uk-modal-dialog uk-modal-body">
                 <button class="uk-modal-close-default" type="button" uk-close></button>
                 <h2 class="uk-modal-title">
@@ -39,9 +39,12 @@
                 </h2>
                 <ul>
                     <li v-for="message in logMessages" :key="message.id">
-                        {{ message.text }}
+                        <span v-html="message.text"></span>
                     </li>
                 </ul>
+                <p class="uk-text-right">
+                    <a href="#" @click.prevent="clearLogMessages()" class="uk-button uk-button-secondary">Vider</a>
+                </p>
             </div>
         </div>
     </div>
@@ -72,19 +75,32 @@
         }
     })
 
+    ipcRenderer.on('open-file', (event, message) => {
+        console.log(event)
+        console.log(message)
+    })
+
     export default {
         name: 'app',
         data() {
             return {
-                logMessages: this.$logMessages
+                logMessages: this.$logMessages,
+                lastLogMessage: ""
+            }
+        },
+        watch: {
+            logMessages: function() {
+                this.lastLogMessage = this.$logMessages.length > 0 ? this.$logMessages[this.$logMessages.length - 1].text : ""
             }
         },
         computed: {
             theme() {
                 return this.$store.state.theme
-            },
-            lastLogMessage() {
-                return this.$logMessages.length > 0 ? this.$logMessages[this.$logMessages.length - 1].text : ""
+            }
+        },
+        methods: {
+            clearLogMessages() {
+                this.logMessages.splice(0, this.logMessages.length)
             }
         }
     }
