@@ -2,7 +2,7 @@
 
 #### ENG
 
-Foxeed is a desktop application that allows you to search for torrents (only on YggTorrent for now), manage your seedbox Transmission (for now) and upload your files via FTP.
+Foxeed is a desktop application that allows you to search for torrents (only on YggTorrent so far), manage your seedbox Transmission (so far) and upload your files via FTP.
 
 Foxeed is available for Windows, Linux and MacOS platforms.
 
